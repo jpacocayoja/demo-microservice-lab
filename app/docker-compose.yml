@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    container_name: node_app_web
+    ports:
+      - "80:3000"
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    command: ["npm", "start"]
+    networks:
+      - mi_red
+
+  # Servicio Redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis_server
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning", "--dir", "/data"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - mi_red
+
+volumes:
+  redis_data:
+
+networks:
+  mi_red:
+    driver: bridge
